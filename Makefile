@@ -11,7 +11,7 @@ DEFAULT: $(PROGRAMS)
 #DEBUG MODE 
 CFLAGS = -m64 -Winline -O3 -Wall
 
-CC = gcc -std=c99  $(CFLAGS)
+CC = gcc -std=c99  
 
 main:  main.o pixel_buffer.o grid.o 
 	$(CC) -o $@ main.o pixel_buffer.o grid.o $(LIBS)

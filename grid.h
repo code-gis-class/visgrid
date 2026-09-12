@@ -85,7 +85,7 @@ Grid* grid_init_from(Grid* grid);
 
 
 // write grid header to file
-// pre: out_file and grid must be valid pointers 
+// pre: out_file and grid must be validkk pointers 
 void grid_write_header(FILE* out_file, Grid* grid);
 
 
