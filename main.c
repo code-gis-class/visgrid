@@ -1,8 +1,9 @@
 // Laura Toma
 //
+// add your name here if you modify the file
+
 #include "pixel_buffer.h"
 #include "grid.h"
-
 
 #include <stdlib.h>
 #include <string.h>
@@ -15,7 +16,7 @@ static const u8 max_rgb_value = 0xffu;
 
 int main(int argc, char** argv) {
 
-  //read in a grid
+  //user shoud specify raster name as argv[1]
   if(argc!= 2) {
     printf("usage: %s [raster.asc]\n", argv[0]); 
     exit(1); 
@@ -27,13 +28,8 @@ int main(int argc, char** argv) {
     exit(1); 
   } 
   Grid* grid = grid_read(infile); 
-  //sanity check  
-  //grid_write_header(stdout, grid); //this should work (?)
-  printf( "\tncols %d\n",  grid->ncols);
-  printf("\tnrows %d\n",   grid->nrows);
-  printf("\tcellsize %f\n",grid->cellsize);
-  
- 
+  grid_write_header(stdout, grid);   //sanity check  
+
  
   //create a bmp of same size as the raster
   const PixelBuffer pb = init_pixel_buffer(grid->ncols, grid->nrows);
@@ -43,7 +39,7 @@ int main(int argc, char** argv) {
   for (u16 y=0; y < pb.height; y++) {
     for (u16 x=0; x< pb.width; x++) {
 
-      float h = grid_get(grid, y, x); //height of this pixel 
+      float h = grid_get(grid, y, x); //get height of this pixel 
       if (grid_is_nodata(grid, y, x)) {
 	color[0] = 0; color[1] = 0; color[2] = 1; //blue if nodata 
       } else {

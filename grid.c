@@ -1,5 +1,7 @@
 // Laura Toma
 //
+// add you name if you modify this file 
+
 #include <stdio.h>
 #include <stdbool.h>
 #include <assert.h>
@@ -11,18 +13,22 @@
 #include "grid.h"
 
 
-// Returns an empty grid object
+// creates and returns an empty grid 
 Grid* grid_init() {
+
   Grid* grid;
   grid = malloc(sizeof(Grid));
   assert(grid);
   grid->data = NULL;
+  grid->nrows = grid->ncols = 0; //to be safe 
+  
   grid->min_value = (float) INT_MAX;
   grid->max_value = (float) -INT_MAX;
   return grid;
 }
 
-//grid must be allocated 
+//reads grid header from file 
+//pre: grid must be allocated 
 void grid_read_header(FILE* in_file, Grid* grid) {
 
   assert(grid); 
@@ -35,14 +41,27 @@ void grid_read_header(FILE* in_file, Grid* grid) {
 }
 
 
-// allocate space for the grid data.
+// allocate space for the grid->data
+// pre: grif must exist and header must be populated
 void grid_malloc_data(Grid* grid) {
+  assert(grid); 
+  if (grid->nrows * grid->ncols ==0) {
+    printf("grid_malloc_data: something's wrong, ncols=%d, nrows=%d\n",
+	   grid->ncols, grid->nrows); 
+    return; //nothing to do
+  }
+  if (grid->data) {
+    printf("grid_malloc_data: oops, something's wrong, data already exists\n"); 
+    return; 
+  } 
   if (!grid->data) {
     grid->data = malloc(grid->nrows * grid->ncols * sizeof(float*));
     assert(grid->data);
   }
 }
 
+// read grid data from file
+// pre: grid must exist and header must be populated 
 void grid_read_data(FILE* in_file, Grid* grid) {
   float val;
   for (int r = 0; r < grid->nrows; r++) {
@@ -54,9 +73,12 @@ void grid_read_data(FILE* in_file, Grid* grid) {
 }
 
 
-// Read grid from file and return it 
+// read grid from file and return it 
 Grid* grid_read(FILE* in_file) {
+
+  assert(in_file); 
   Grid* grid = grid_init();
+  assert(grid); 
   grid_read_header(in_file, grid);
   grid_malloc_data(grid);
   grid_read_data(in_file, grid);
@@ -65,7 +87,8 @@ Grid* grid_read(FILE* in_file) {
 
 
 
-
+// write grid header to file
+// pre: out_file and grid must be valid pointers 
 void grid_write_header(FILE* out_file, Grid* grid) {
   fprintf(out_file, "ncols %d\n",        grid->ncols);
   fprintf(out_file, "nrows %d\n",        grid->nrows);
@@ -76,7 +99,7 @@ void grid_write_header(FILE* out_file, Grid* grid) {
 }
 
 
-// Write the complete asc file for a grid.
+// Write the grid to file in asrascii format
 void grid_write(FILE* out_file, Grid* grid) {
 
   grid_write_header(out_file, grid);
@@ -90,8 +113,10 @@ void grid_write(FILE* out_file, Grid* grid) {
 
 
 
-
+// pre: grid and new_grid exist
+// copy header from grid to new_grid 
 void grid_copy_header(Grid* grid, Grid* new_grid) {
+
   assert (grid && new_grid); 
   new_grid->ncols =        grid->ncols;
   new_grid->nrows =        grid->nrows;
@@ -102,8 +127,11 @@ void grid_copy_header(Grid* grid, Grid* new_grid) {
 }
 
 
-// Initialize a grid based on an existing grid, copying e.g. its dimensions.
+// pre: grid is a valid grid  populated  with data 
+// create and initialize a new grid based on grid, copying its header and allocating its data 
 Grid* grid_init_from(Grid* grid) {
+
+  assert(grid); 
   Grid* new_grid = grid_init();
   grid_copy_header(grid, new_grid);
   grid_malloc_data(new_grid);
@@ -111,10 +139,14 @@ Grid* grid_init_from(Grid* grid) {
 }
 
 
-// Free a grid and its associated malloced data;
+// Free a grid and its associated malloc-ed data
 void grid_free(Grid* grid) {
-  free(grid->data);
+  if (!grid)
+    return; //nothing to free 
+  if (grid->data)
+    free(grid->data);
   free(grid);
 }
+
 
 
