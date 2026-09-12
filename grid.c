@@ -17,8 +17,8 @@ Grid* grid_init() {
   grid = malloc(sizeof(Grid));
   assert(grid);
   grid->data = NULL;
-  grid->min_value = INT_MAX;
-  grid->max_value = -INT_MAX;
+  grid->min_value = (float) INT_MAX;
+  grid->max_value = (float) -INT_MAX;
   return grid;
 }
 
