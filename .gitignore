@@ -1,0 +1,12 @@
+# Compiled output
+*.o
+main
+
+# data
+*.asc
+
+out.bmp
+
+# Editor / OS noise
+.DS_Store
+.vscode/
